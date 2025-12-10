@@ -33,7 +33,9 @@
             {% for s in list %}
             <tr>
                 <td>{{s.sno}}</td>
-                <td>{{s.name}}</td>
+                <td>
+                    <a href='{% url "student:view" s.sno %}'> {{s.name}} </a>
+                </td>
                 <td>{{s.age}}</td>
                 <td>{{s.grade}}</td>
                 <td>{{s.gender}}</td>
