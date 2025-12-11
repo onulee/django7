@@ -23,7 +23,9 @@ def write(request):
 # 학생수정페이지
 def update(request,sno):
     if request.method == 'GET':
-        return render(request,'student/update.html')
+        qs = Student.objects.get(sno=sno)
+        context = {"stu":qs}
+        return render(request,'student/update.html',context)
     elif request.method == 'POST':
         name = request.POST.get("name")
         age = request.POST.get("age")
@@ -31,11 +33,15 @@ def update(request,sno):
         gender = request.POST.get("gender")
         hobby = request.POST.getlist("hobby")
         # Student db저장
-        qs = Student(name=name,age=age,grade=grade,gender=gender,hobby=hobby)
+        qs = Student.objects.get(sno=sno)
+        qs.name = name
+        qs.age = age
+        qs.grade = grade
+        qs.gender = gender
+        qs.hobby = hobby
         qs.save()
-        print("post확인저장 : ",name)
+        print("post확인수정 : ",name)
         return redirect(reverse('student:list'))
-        # return render(request,'student/list.html')
 
 # 학생리스트페이지
 def list(request):
