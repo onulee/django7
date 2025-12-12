@@ -14,8 +14,10 @@ def login(request):
         qs = Member.objects.filter(id=id,pw=pw)
         if qs:
             print("아이디와 비밀번호가 일치합니다.")
-            context = {"error":"1"}
-            return render(request,'member/login.html',context)
+            # context = {"error":"1"}
+            # return render(request,'member/login.html',context)
+            url = reverse('index')
+            return redirect(f"{url}?error=1")
         else:
             print("아이디와 비밀번호가 일치하지 않습니다.")    
             context = {"error":"0"}
