@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
   <title>VLAST Shop - 게시글 상세보기</title>
   <style>
     body {
@@ -266,23 +267,18 @@
 
   <!-- Detail View -->
   <div class="detail-container">
-    <div class="detail-title">[공지] 추석 연휴 배송 안내</div>
+    <div class="detail-title">[공지] {{board.btitle}}</div>
     <div class="detail-info">
-      <div>작성자: 관리자</div>
-      <div>작성일: 2025-09-05</div>
-      <div>조회수: 123</div>
+      <div>작성자: {{board.member.name}}</div>
+      <div>작성일: {{board.bdate |date:'Y-m-d H:i' }}</div>
+      <div>조회수: {{board.bhit}}</div>
     </div>
     <div class="detail-content">
-      안녕하세요, 고객님.<br><br>
-      추석 연휴 기간 동안의 배송 일정에 대해 안내드립니다.<br>
-      9월 15일부터 9월 18일까지는 배송이 지연될 수 있으니 참고 부탁드립니다.<br><br>
-      풍성한 한가위 보내시길 바랍니다.<br><br>
-      감사합니다.<br>
-      VLAST Shop 운영팀 드림.
+      {{board.bcontent}}
     </div>
     <div class="detail-buttons">
-      <a href="board.html">목록으로</a>
-      <a href="#">수정</a>
+      <a href="/board/list/">목록으로</a>
+      <a href="/board/update/{{board.bno}}/">수정</a>
       <button id="deleteBtn">삭제</button>
     </div>
   </div>
@@ -329,6 +325,9 @@
     const confirmDelete = document.getElementById('confirmDelete');
     const cancelDelete = document.getElementById('cancelDelete');
 
+    //-----------------------------------------------
+    //   게시글 삭제
+    //-----------------------------------------------
     deleteBtn.addEventListener('click', () => {
       modalOverlay.style.display = 'flex';
     });
@@ -337,13 +336,22 @@
       modalOverlay.style.display = 'none';
     });
 
-    confirmDelete.addEventListener('click', () => {
-      modalOverlay.style.display = 'none';
-      // 실제 삭제 로직 삽입 위치
+
+    //제이쿼리
+    $(function(){
+      $("#confirmDelete").click(function(){
+        alert('게시글이 삭제되었습니다.');
+        window.location.href = '/board/delete/{{board.bno}}/';
+      });
+
+
+    });//제이쿼리
+
+    
+    {% comment %} confirmDelete.addEventListener('click', () => {
       alert('게시글이 삭제되었습니다.');
-      // 예: 목록 페이지로 이동
-      window.location.href = 'board.html';
-    });
+      window.location.href = '/board/delete/{{board.bno}}/';
+    });  {% endcomment %}
 
     // 모달 바깥 클릭 시 닫기
     modalOverlay.addEventListener('click', (e) => {
@@ -352,7 +360,9 @@
       }
     });
 
+    //------------------------------------------------------
     // 댓글 기능
+    //------------------------------------------------------
     const commentForm = document.getElementById('commentForm');
     const commentsList = document.getElementById('commentsList');
 
@@ -401,8 +411,8 @@
       if (e.target.classList.contains('delete-btn')) {
         // 삭제 버튼 클릭
         if (confirm('이 댓글을 삭제하시겠습니까?')) {
-          const commentDiv = e.target.closest('.comment');
-          if (commentDiv) commentDiv.remove();
+           // 링크연결
+           
         }
       } else if (e.target.classList.contains('edit-btn')) {
         // 수정 버튼 클릭

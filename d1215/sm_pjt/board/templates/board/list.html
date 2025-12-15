@@ -279,8 +279,8 @@
           {% for b in list %}
             <tr>
               <td>{{b.bno}}</td>
-              <td class="title"><a href="">{{b.btitle}}</a></td>
-              <td>{{b.member.id}}</td>
+              <td class="title"><a href="/board/view/{{b.bno}}/">{{b.btitle}}</a></td>
+              <td>{{b.member.name}}</td>
               <td class="date">{{b.bdate|date:'Y-m-d H:i'}}</td>
               <td class="views">{{b.bhit}}</td>
             </tr>
