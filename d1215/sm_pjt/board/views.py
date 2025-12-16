@@ -18,6 +18,7 @@ def reply(request,bno):
         btitle = request.POST.get('btitle')
         bcontent = request.POST.get('bcontent')
         id = request.session['session_id']
+        # id = request.session.get('session_id')
         qs2 = Member.objects.get(id=id)
         # 1. bgroup에서 부모보다 bstep 더 높은 값을 검색
         bstepup_qs = Board.objects.filter(bgroup=bgroup,bstep__gt=bstep)
