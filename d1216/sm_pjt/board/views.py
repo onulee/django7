@@ -10,7 +10,20 @@ def update(request,bno):
         qs = Board.objects.get(bno=bno)
         context = {'board':qs}
         return render(request,'board/update.html',context)
-
+    elif request.method == 'POST':
+        id = request.session.get('session_id')
+        member = Member.objects.get(id=id)
+        btitle = request.POST.get('btitle')
+        bcontent = request.POST.get('bcontent')
+        bfile = request.FILES.get('bfile')
+        # 수정
+        qs = Board.objects.get(bno=bno)
+        qs.btitle = btitle
+        qs.bcontent = bcontent
+        if bfile: qs.bfile = bfile
+        qs.save()    
+        return redirect(f'/board/view/{bno}/')    
+                
 # 게시판 삭제
 def delete(request,bno):
     # 게시글 가져오기
