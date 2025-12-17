@@ -13,13 +13,17 @@
      $(function(){
       alert('ajax확인');
       $.ajax({
-        url:'/comment/list/',
+        url:'/comment/clist/',
         type:'get',
         dataType:'json',
+        
         success:function(data){
           alert("성공");
           console.log("확인 : ",data);
-          console.log("확인2 : ",data[0]);
+          console.log("확인1 : ",data.result);
+          console.log("확인1 : ",data.list);
+          console.log("확인1 : ",data.list[0].cdate);
+          
           //console.log("확인3 : ",data[0].fields);
           //console.log("확인4 : ",data[0].fields.cdate);
           
