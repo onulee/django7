@@ -3,6 +3,36 @@ from board.models import Board
 from member.models import Member
 from django.db.models import F,Q
 
+# 게시판 답글달기
+def reply(request,bno):
+    if request.method == 'GET':
+        # 게시글 가져오기
+        qs = Board.objects.get(bno=bno)
+        context = {'board':qs}
+        return render(request,'board/reply.html',context)
+    elif request.method == 'POST':
+        # 답글저장
+        bgroup = request.POST.get('bgroup')
+        bstep = int(request.POST.get('bstep'))
+        bindent = int(request.POST.get('bindent'))
+        btitle = request.POST.get('btitle')
+        bcontent = request.POST.get('bcontent')
+        id = request.session.get('session_id')
+        member = Member.objects.get(id=id)
+        bfile = request.FILES.get('bfile','')
+        # 1. 답글달기 : 우선 같은 그룹에 있는 게시글의 bstep 1씩 먼저 증가
+        board_qs = Board.objects.filter(bgroup=bgroup,bstep__gt = bstep)
+        board_qs.update(bstep=F('bstep')+1) # F함수 : 검색된 그 컬럼에만 값을 적용
+        
+        # 2. 답글저장
+        Board.objects.create(btitle=btitle,bcontent=bcontent,member=member,bgroup=bgroup,\
+            bstep=bstep+1,bindent=bindent+1,bfile=bfile)
+        
+        
+        context = {'flag':1}
+        return render(request,'board/reply.html',context)
+
+
 # 게시판 수정
 def update(request,bno):
     if request.method == 'GET':
