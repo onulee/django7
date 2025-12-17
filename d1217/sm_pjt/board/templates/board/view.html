@@ -9,62 +9,6 @@
   <title>VLAST Shop - 게시글 상세보기</title>
   <link rel='stylesheet' href='{% static "css/view.css" %}'>
   <script>
-     //제이쿼리
-     $(function(){
-
-      // 하단댓글리스트 함수호출
-      $.ajax({
-        url:'/comment/clist/',
-        type:'get',
-        data:{'bno':'{{board.bno}}'},
-        dataType:'json',
-        success:function(data){
-          console.log("확인 : ",data.result);
-          console.log("확인2 : ",data.list);
-          if(data.list.length==0){
-             $("#commentsList").html("<div style='text-align:center;'>하단댓글이 없습니다.</div>");
-             return;
-          }
-
-          let dataHtml = ``;
-          //반복
-          for (let i=0;i<data.list.length;i++){
-            dataHtml += `
-            <div class="comment">
-              <strong>${data.list[i].member_id}</strong> <span>(${data.list[i].cdate})</span>
-              <p>${data.list[i].ccontent}</p>             
-              <div class="comment-buttons">
-                <button class="edit-btn">수정</button>
-                <button class="delete-btn">삭제</button>
-              </div>
-            </div>
-            `;
-          }
-
-          // 하단댓글 파일 적용
-          $("#commentsList").html(dataHtml);
-        },
-        error:function(){
-          alert('실패');
-        }
-      });//ajax
-
-      // 댓글추가부분
-
-
-      // 댓글삭제부분
-      
-
-      // 댓글수정부분
-
-
-
-
-
-    });//jquery
-
-
-
   </script>
 
 </head>
@@ -99,7 +43,7 @@
       {% if board.bfile %}
         <img src='/media/{{board.bfile}}' style='width:150px;'>
       {% else %}
-        <div> 첨부된 파일이 없습니다. </div>
+        첨부된 파일이 없습니다.
       {% endif %}
     </div>
     <div class="detail-buttons">
@@ -118,9 +62,10 @@
   <div id="commentsSection">
     <h3>댓글</h3>
     <form id="commentForm">
-      <input type="text" id="commentName" placeholder="이름" maxlength="20" />
+      <span style='padding-top:15px;'>아이디 : aaa</span>
+      <input type="text" id="commentPw" placeholder="비밀번호" maxlength="20" />
       <textarea id="commentText" placeholder="댓글을 입력하세요." maxlength="200"></textarea>
-      <button type="submit">등록</button>
+      <button type="button" id='writeBtn'>등록</button>
     </form>
     <div id="commentsList">
       
@@ -146,6 +91,122 @@
   </footer>
 
   <script>
+  //전역변수 선언
+  let frist_list = 1
+
+  //제이쿼리
+    $(function(){
+
+    // 1. 하단댓글리스트 함수호출 ----------------------------------
+    $.ajax({
+      url:'/comment/clist/',
+      type:'get',
+      data:{'bno':'{{board.bno}}'},
+      dataType:'json',
+      success:function(data){
+        console.log("확인 : ",data.result);
+        console.log("확인2 : ",data.list);
+        if(data.list.length==0){
+            $("#commentsList").html("<div style='text-align:center;'>하단댓글이 없습니다.</div>");
+            frist_list = 0;
+            return;
+        }
+
+        let dataHtml = ``;
+        //반복
+        for (let i=0;i<data.list.length;i++){
+          dataHtml += `
+          <div class="comment" id='${data.list[i].cno}'>
+            <strong>${data.list[i].member_id}</strong> <span>(${data.list[i].cdate})</span>
+            <p>${data.list[i].ccontent}</p>             
+            <div class="comment-buttons">
+              <button class="edit-btn">수정</button>
+              <button class="delete-btn">삭제</button>
+            </div>
+          </div>
+          `;
+        }
+
+        // 하단댓글 파일 적용
+        $("#commentsList").html(dataHtml);
+      },
+      error:function(){
+        alert('실패');
+      }
+    });//ajax
+//  하단댓글리스트 ------------------------------------------------------
+
+      // 댓글추가부분 ---------------------------------------------------
+      $(document).on('click','#writeBtn',function(){
+        let id = '{{request.session.session_id}}';
+        let ccontent = $("#commentText").val();
+        let cpw = $("#commentPw").val();
+        // 데이터 입력확인
+        if(ccontent.length<1){
+          alert("댓글내용을 입력하셔야 저장 가능합니다.");
+          $("#commentText").focus();
+          return;
+        }
+        
+        alert("댓글을 추가합니다.");
+        
+        //db저장
+        $.ajax({
+          url:'/comment/cwrite/',
+          type:'post',
+          headers:{'X-CSRFToken':'{{csrf_token}}'},
+          data:{'bno':'{{board.bno}}','cpw':cpw,'ccontent':ccontent},
+          dataType:'json',
+          success:function(data){
+            alert('성공');
+            console.log("확인 : ",data.c_comment);
+            
+            //댓글추가부분
+            let dataHtml = `
+            <div class="comment" id='${data.c_comment.cno}'>
+              <strong>${data.c_comment.member_id}</strong> <span>(${data.c_comment.cdate})</span>
+              <p>${data.c_comment.ccontent}</p>             
+              <div class="comment-buttons">
+                <button class="edit-btn">수정</button>
+                <button class="delete-btn">삭제</button>
+                </div>
+                </div>
+                `;
+            // 댓글저장
+            if(frist_list==0){
+              $("#commentsList").html(dataHtml);
+              frist_list = 1;
+            }else{
+              $("#commentsList").prepend(dataHtml);
+            }
+            //빈공백 처리
+            $("#commentText").val('');
+            $("#commentPw").val('');
+            
+          },
+          error:function(){ alert('실패');}
+        });//ajax
+        
+        
+    });//writeBtn
+    // 댓글추가부분 ---------------------------------------------------
+          
+
+      // 댓글삭제부분
+
+
+      // 댓글수정부분
+
+
+
+
+
+    });//jquery
+
+
+
+
+
     const deleteBtn = document.getElementById('deleteBtn');
     const modalOverlay = document.getElementById('modalOverlay');
     const confirmDelete = document.getElementById('confirmDelete');
@@ -178,46 +239,7 @@
     const commentForm = document.getElementById('commentForm');
     const commentsList = document.getElementById('commentsList');
 
-    // 댓글추가부분
-    commentForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const nameInput = document.getElementById('commentName');
-      const textInput = document.getElementById('commentText');
-      const name = nameInput.value.trim();
-      const text = textInput.value.trim();
-
-      if (!name || !text) {
-        alert('이름과 댓글 내용을 모두 입력해주세요.');
-        return;
-      }
-
-      const now = new Date();
-      const formattedDate = now.getFullYear() + '-' +
-                            String(now.getMonth()+1).padStart(2,'0') + '-' +
-                            String(now.getDate()).padStart(2,'0') + ' ' +
-                            String(now.getHours()).padStart(2,'0') + ':' +
-                            String(now.getMinutes()).padStart(2,'0');
-
-      const newComment = document.createElement('div');
-      newComment.classList.add('comment');
-      newComment.style.padding = '12px 15px';
-      newComment.style.borderBottom = '1px solid #e0e0e0';
-
-      newComment.innerHTML = `
-        <strong>${escapeHtml(name)}</strong> <span>(${formattedDate})</span>
-        <p>${escapeHtml(text)}</p>
-        <div class="comment-buttons">
-          <button class="edit-btn">수정</button>
-          <button class="delete-btn">삭제</button>
-        </div>
-      `;
-
-      commentsList.appendChild(newComment);
-
-      nameInput.value = '';
-      textInput.value = '';
-    });
+    
 
     // 댓글 수정/삭제 이벤트 위임
     commentsList.addEventListener('click', (e) => {

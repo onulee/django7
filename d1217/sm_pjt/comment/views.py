@@ -6,7 +6,24 @@ from django.http import JsonResponse,HttpResponse # 전송할때 Json타입으�
 from django.core import serializers  # Json타입으로 전달된 데이터를 파이썬데이터(set)로 변경
 
 
-# 하단댓글 부분 
+# 하단댓글 추가 
+def cwrite(request):
+    if request.method == 'POST':
+        bno = request.POST.get('bno')
+        board = Board.objects.get(bno=bno)
+        cpw = request.POST.get('cpw') 
+        ccontent = request.POST.get('ccontent') 
+        id = request.session.get('session_id')
+        member = Member.objects.get(id=id)
+        print(f"bno : {bno}, cpw : {cpw}, ccontent : {ccontent}")
+        
+        qs = Comment.objects.create(board=board,cpw=cpw,ccontent=ccontent,member=member)
+        # values()를 해야 list타입으로 변경됨.
+        c_qs = list(Comment.objects.filter(cno=qs.cno).values())
+        context = {'c_comment':c_qs[0]}
+        return JsonResponse(context)
+
+# 하단댓글 리스트 
 def clist(request):
     bno = request.GET.get('bno') 
     print("bno : ",bno)
