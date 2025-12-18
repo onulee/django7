@@ -132,8 +132,8 @@
           success:function(data){
             alert('성공');
 
-            console.log("확인 : "+data);
-            console.log("확인 : "+data.comment);
+            console.log("확인 : ",data);
+            console.log("확인 : ",data.comment);
             
             //댓글추가부분
             let dataHtml = `
@@ -160,10 +160,9 @@
           },
           error:function(){ alert('실패');}
         });//ajax
-        
-        
     });//writeBtn
     // 댓글추가부분 ---------------------------------------------------
+
     // 2.댓글삭제부분 -------------------------------------------------
     $(document).on('click','.delete-btn',function(){
       if(confirm('댓글을 삭제하시겠습니까?')){
