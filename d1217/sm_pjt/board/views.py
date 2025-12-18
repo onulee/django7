@@ -5,6 +5,12 @@ from member.models import Member
 from django.db.models import F,Q
 from django.core.paginator import Paginator
 
+
+# 차트 그리기
+def chart(request):
+    return render(request,'board/chart.html')
+
+
 # 게시판 답글달기
 def reply(request,bno):
     if request.method == 'GET':

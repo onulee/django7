@@ -234,7 +234,7 @@
             success:function(data){
               alert('성공');
               let dataHtml = `
-                <strong>${name}</strong> <span>${data.comment.cdate}</span>
+                <strong>${name}</strong> <span>( ${data.comment.cdate} )</span>
                 <p>${ccontent}</p>             
                 <div class="comment-buttons">
                   <button class="edit-btn">수정</button>
