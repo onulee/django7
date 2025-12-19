@@ -3,11 +3,19 @@ from board.models import Board
 from member.models import Member
 from django.db.models import F,Q
 from django.core.paginator import Paginator
-
+import requests
+import json
+from . import func_api
 
 # 차트 그리기
 def chart(request):
     return render(request,'board/chart.html')
+
+# 공공데이터 api
+def list2(request):
+    public_key = func_api.public_api()
+    context = {'result':'성공'}
+    return render(request,'board/list2.html',context)
 
 
 # 게시판 답글달기
@@ -71,13 +79,15 @@ def delete(request,bno):
 
 # 게시판 상세보기 - 해당 하단댓글도 함께 가져올수 있음.
 def view(request,bno):
+    page = request.GET.get('page')
+    search = request.GET.get('search')
     # 게시글 가져오기
     qs = Board.objects.filter(bno=bno)
     
     # 조회수 1증가
     # 조회를 한후 조회된 데이터들을 update,delete : F
     qs.update(bhit = F('bhit') + 1 )
-    context = {'board':qs[0]}
+    context = {'board':qs[0],'search':search,'page':page}
     return render(request,'board/view.html',context)
 
 # 게시판 상세보기 - 해당 하단댓글도 함께 가져올수 있음.
@@ -93,15 +103,26 @@ def view2(request,bno):
 
 # 게시판 리스트
 def list(request):
-    # 게시글 모두 가져오기
-    qs = Board.objects.all().order_by('-bgroup','bstep')
-    # 하단 넘버링 (qs,10) -> 1페이지 10개씩
-    paginator = Paginator(qs,10)  # 101 -> 11
-    # 현재페이지 넘김.
+    search = request.GET.get('search','')
     page = int(request.GET.get('page',1))
-    list_qs = paginator.get_page(page) # 1page -> 게시글 10개를 전달
-    
-    context = {'list':list_qs,'page':page}
+    if search == '':
+        # 게시글 모두 가져오기
+        qs = Board.objects.all().order_by('-bgroup','bstep')
+        # 하단 넘버링 (qs,10) -> 1페이지 10개씩
+        paginator = Paginator(qs,10)  # 101 -> 11
+        # 현재페이지 넘김.
+        list_qs = paginator.get_page(page) # 1page -> 게시글 10개를 전달
+    else:
+        qs = Board.objects.filter(btitle__icontains = search)
+        # and 조건
+        # qs = Board.objects.filter(btitle__icontains = '답글',bcontent__icontains='답글')
+        # or 조건
+        # qs = Board.objects.filter(Q(btitle__icontains = '답글')|Q(bcontent__icontains = '답글'))
+        # 하단 넘버링 (qs,10) -> 1페이지 10개씩
+        paginator = Paginator(qs,10)  # 101 -> 11
+        # 현재페이지 넘김.
+        list_qs = paginator.get_page(page) # 1page -> 게시글 10개를 전달
+    context = {'list':list_qs,'page':page,'search':search}
     return render(request,'board/list.html',context)
 
 # 게시판 글쓰기
