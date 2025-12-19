@@ -21,7 +21,7 @@
       <div>조회수: {{board.bhit}}</div>
     </div>
     <div class="detail-content">
-      {{board.bcontent}}
+      {{board.bcontent|safe}}
       <br>
       {% if board.bfile %}
         <img src='/media/{{board.bfile}}' style='width:150px;'>

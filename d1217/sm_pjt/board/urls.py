@@ -4,6 +4,10 @@ from . import views
 app_name='board'
 urlpatterns = [
     path('list/', views.list, name='list'),
+    # 공공데이터 api - 관광사진정보
+    path('list2/', views.list2, name='list2'),
+    # 영화진흥위원회 api
+    path('list3/', views.list3, name='list3'),
     path('write/', views.write, name='write'),
     path('view/<int:bno>/', views.view, name='view'),
     path('view2/<int:bno>/', views.view2, name='view2'),
@@ -12,4 +16,5 @@ urlpatterns = [
     path('reply/<int:bno>/', views.reply, name='reply'),
     # 차트그리기
     path('chart/', views.chart, name='chart'),
+    path('profileUpload/', views.profileUpload, name='profileUpload'),
 ]

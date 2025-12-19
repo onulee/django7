@@ -4,6 +4,32 @@ from comment.models import Comment
 from member.models import Member
 from django.db.models import F,Q
 from django.core.paginator import Paginator
+import requests
+import json
+import pprint
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+
+
+# summernote 파일첨부
+@csrf_exempt  # AJAX CSRF 처리 (토큰 쓰면 제거 가능)
+def profileUpload(request):
+    if request.method == 'POST':
+       # 브라우저에서 업로드 된 파일
+       file = request.FILES.get('file')
+    
+       # default_storage → 파일 저장소 : MEDIA 설정 자동 사용
+       # 저장 : MEDIA_ROOT, URL : MEDIA_URL
+       # file.read() : 파일의 바이너리 데이터를 읽어옴 / ContentFile : 디장고 파일 객체변환
+       file_path = f'summernote/{file}'
+       saved_path = default_storage.save(file_path, ContentFile(file.read()))
+
+       # MEDIA_URL 기준으로 이미지 URL 생성
+       image_url = default_storage.url(saved_path)
+
+       return JsonResponse(image_url, safe=False)
 
 
 # 차트 그리기
@@ -105,6 +131,37 @@ def list(request):
     
     context = {'list':list_qs,'page':page}
     return render(request,'board/list.html',context)
+
+# 공공데이터 리스트 - api
+def list2(request):
+    # 공공데이터 api 접속
+    public_key = '918RE13GA7OY7ZEmUzApgbOeAcQoZ%2FaHsXWcqPAKQ9YNNPj83KOstRMRIUrCFIAcm9qj2R6b7NFZjp%2FYsYzJLg%3D%3D'
+    # page_no = request.GET.get('page_no')
+    page_no = 1
+    url = f'https://apis.data.go.kr/B551011/PhotoGalleryService1/galleryList1?serviceKey={public_key}&numOfRows=10&pageNo={page_no}&MobileOS=ETC&MobileApp=AppTest&arrange=A&_type=json'
+    # 공공데이터 정보 가져오기
+    rel = requests.get(url)
+    # 파일 변환 : 문자열 -> json타입변경
+    json_data = json.loads(rel.text)
+    p_list = json_data['response']['body']['items']['item'] 
+    print('json데이터 ----------------',p_list[0])
+    context = {'result':'성공','list':p_list}
+    return render(request,'board/list2.html',context)
+
+# 영화진흥위원회 - api
+def list3(request):
+    # 영화진흥위원회 api 접속
+    public_key = 'b4cefdc91025f56609b0e03df7a460a0'
+    url = f'https://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchDailyBoxOfficeList.json?key={public_key}&itemPerPage=30&targetDt=20250130'
+    # url = f'http://kobis.or.kr/kobisopenapi/webservice/rest/boxoffice/searchWeeklyBoxOfficeList.json?key={public_key}&targetDt=20251218'
+    # 영화진흥위원회 정보 가져오기
+    rel = requests.get(url)
+    # 파일 변환 : 문자열 -> json타입변경
+    json_data = json.loads(rel.text)
+    p_list = json_data['boxOfficeResult']['dailyBoxOfficeList'] 
+    print('json데이터 ----------------',p_list[0])
+    context = {'result':'성공','list':p_list}
+    return render(request,'board/list3.html',context)
 
 # 게시판 글쓰기
 def write(request):
