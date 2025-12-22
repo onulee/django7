@@ -10,7 +10,7 @@
 <link rel="stylesheet" type="text/css" href="/static/css/reset.css?v=Y" />
 <link rel="stylesheet" type="text/css" href="/static/css/layout.css?v=Y" />
 <link rel="stylesheet" type="text/css" href="/static/css/content.css?v=Y" />
-<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script  src="http://code.jquery.com/jquery-latest.min.js"></script>
 <script type="text/javascript" src="/static/js/top_navi.js"></script>
 <script type="text/javascript" src="/static/js/left_navi.js"></script>
 <script type="text/javascript" src="/static/js/main.js"></script>
@@ -268,10 +268,10 @@ $(document).ready(function() {
 											data:{'id':id},
 											success:function(data){
 												alert('성공');
-												if(data == '사용가능'){
-													document.getElementById('id_check').innerHTML('<span class="mvalign black">* 아이디 사용가능</span>');
+												if(data.result == '사용가능'){
+													document.getElementById('id_check').innerHTML = '<span class="mvalign black">* 아이디 사용가능</span>';
 												}else{
-													document.getElementById('id_check').innerHTML('<span class="mvalign orange">* 아이디가 존재합니다.</span>');
+													document.getElementById('id_check').innerHTML = '<span class="mvalign orange">* 아이디가 존재합니다.</span>';
 												}
 											},
 											error:function(){
