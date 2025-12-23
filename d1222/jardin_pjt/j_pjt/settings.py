@@ -28,6 +28,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home',
     'member',
+    'product',
+    'customer',
 ]
 
 MIDDLEWARE = [
