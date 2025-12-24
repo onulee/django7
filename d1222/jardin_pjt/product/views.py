@@ -4,6 +4,8 @@ import requests
 from django.conf import settings
 import json
 from secret.secret_func import *
+from product.models import Payment,PaymentAmount
+from django.utils.dateparse import parse_datetime
 
 # ------------------------------------------------------------------
 # 제품상세페이지
@@ -95,7 +97,32 @@ def approve(request):
     if result.get('aid'):
         # db에 저장 - 결제정보 
         # Payment.objects.create(                 )
+        payment = Payment.objects.create(
+            aid=result["aid"],
+            tid=data["tid"],
+            cid=data['cid'],
+            partner_order_id=result["partner_order_id"],
+            partner_user_id=result["partner_user_id"],
+            payment_method_type=result["payment_method_type"],
+            item_name=result["item_name"],
+            quantity=result["quantity"],
+            created_at=parse_datetime(result["created_at"]),
+            approved_at=parse_datetime(result["approved_at"]),
+        )
+
+        PaymentAmount.objects.create(
+            payment=payment,
+            total=result["amount"]["total"],
+            tax_free=result["amount"]["tax_free"],
+            vat=result["amount"]["vat"],
+            point=result["amount"]["point"],
+            discount=result["amount"]["discount"],
+            green_deposit=result["amount"]["green_deposit"],
+        )
+
         
+        
+        #-----------------------
         print('결제 성공!!!')
         return redirect('/product/success/')
     
