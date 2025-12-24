@@ -3,13 +3,14 @@ from django.http import HttpResponse
 import requests
 from django.conf import settings
 import json
+from secret.secret_func import *
 
 # ------------------------------------------------------------------
 # 제품상세페이지
 def detail(request):
     return render(request,'product/detail.html')
 
-KAKAO_API_KEY = 'DEV1ED7BAF41865687FDD6DC42BA160D83085686'
+KAKAO_API_KEY = make_kakao_key()
 KAKAOPAY_URL = 'https://open-api.kakaopay.com/online/v1/payment/ready'
 
 # 1. 카카오페이 준비 화면
