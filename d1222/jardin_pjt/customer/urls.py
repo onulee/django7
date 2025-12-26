@@ -8,5 +8,6 @@ urlpatterns = [
     path('cwrite/', views.cwrite, name='cwrite'),
     path('cview/<int:bno>/', views.cview, name='cview'),
     
+    path('clike/', views.clike, name='clike'),
 ]
 

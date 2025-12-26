@@ -15,6 +15,9 @@ class Board(models.Model):
     bfile = models.FileField(default='',null=True)
     bdate = models.DateTimeField(auto_now=True)
     
+    likes = models.ManyToManyField(Member, related_name='likes_board', null=True, blank=True)
+
+    
     def __str__(self):
         return f'{self.bno},{self.btitle},{self.member.id},{self.bgroup},{self.bdate}'
 

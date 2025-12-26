@@ -1,9 +1,30 @@
 from django.shortcuts import render,redirect
+from django.http import JsonResponse
 from customer.models import Board
 from member.models import Member
 from django.core.paginator import Paginator
 from django.db.models import F,Q,Sum,Count
 from comment.models import Comment
+
+def clike(request):
+    # 데이터가져오기
+    id = request.session['session_id']
+    member = Member.objects.get(id=id)
+    bno = request.POST.get("bno",1)
+    board = Board.objects.get(bno=bno)
+    
+    if board.likes.filter(pk=id).exists():
+        board.likes.remove(member) # relation_name사용
+        like_chk = '제거'
+    else:
+        board.likes.add(member)  
+        like_chk = '추가'
+    
+    print("개수 : ",board.likes.count())   
+    # 데이터저장
+    context = {"result":like_chk,"count":board.likes.count()}
+    return JsonResponse(context)
+
 
 def cwrite(request):
     if request.method == 'GET':
