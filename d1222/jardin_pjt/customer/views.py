@@ -13,7 +13,7 @@ def clike(request):
     bno = request.POST.get("bno",1)
     board = Board.objects.get(bno=bno)
     
-    if board.likes.filter(pk=id).exists():
+    if board.likes.filter(pk=member.id).exists():
         board.likes.remove(member) # relation_name사용
         like_chk = '제거'
     else:
