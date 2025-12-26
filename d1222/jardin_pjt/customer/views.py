@@ -3,6 +3,7 @@ from customer.models import Board
 from member.models import Member
 from django.core.paginator import Paginator
 from django.db.models import F,Q,Sum,Count
+from comment.models import Comment
 
 def cwrite(request):
     if request.method == 'GET':
@@ -20,12 +21,14 @@ def cwrite(request):
         return redirect('/customer/clist/')
         
 
-
+# 고객센터 페이지 뷰 ----------------------------
 def cview(request,bno):
+    # 1개 게시글
     qs = Board.objects.get(bno=bno)
+    # 하단댓글
+    comment_qs = Comment.objects.all().order_by('-cno')
     
     # bgroup 역순정렬, bstep 순차정렬
-    
     #이전글-----
     pre_qs = Board.objects.filter(bgroup__lt=qs.bgroup).order_by("-bgroup","bstep").first()
     # 답글달기가 포함 되어 있을때 쿼리문
@@ -37,7 +40,7 @@ def cview(request,bno):
     # next_qs = Board.objects.filter(Q(bgroup__gt=qs[0].bgroup,bstep__gte=qs[0].bstep)|Q(bgroup=qs[0].bgroup,bstep__lt=qs[0].bstep)).order_by("bgroup","-bstep").first()
     print("다음글 : ",next_qs)
 
-    context = {'c':qs,'pre_c':pre_qs,'next_c':next_qs}
+    context = {'c':qs,'pre_c':pre_qs,'next_c':next_qs,'comment_qs':comment_qs}
     return render(request,'customer/cview.html',context)
 
 def clist(request):

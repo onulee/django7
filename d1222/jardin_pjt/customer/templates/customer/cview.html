@@ -79,6 +79,130 @@
 					</div>
 					<!-- //이전다음글 -->
 
+					<script>
+						$(function(){
+							//하단댓글 삭제부분 ------------------------
+							$(document).on('click','.deleteBtn',function(){
+								let cno = $(this).closest('ul').attr('id');
+								console.log('삭제번호 : ',cno)
+
+								if(confirm('데이터를 삭제하시겠습니까?')){
+									//ajax db삭제
+									$.ajax({
+										url:'/comment/codelete/',
+										type:'post',
+										headers:{'X-CSRFToken':'{{csrf_token}}' },
+										data:{'cno':cno},
+										dataType:'json',
+										success:function(data){
+											console.log("결과 : ",data.result)
+											//삭제부분
+											$("#"+cno).remove();
+											//댓글개수 1감소
+											let co_count = Number($(".co_count").text())
+											co_count -= 1
+											$(".co_count").text(co_count);
+										},
+										error:function(){alert('실패');}
+									});//ajax
+								}//if
+
+							});//deleteBtn
+							
+							//하단댓글 추가부분 ------------------------
+							$(document).on('click','.replyBtn',function(){
+								alert('하단댓글을 추가합니다.');
+								let cpw = $(".replynum").val()
+								let ccontent = $(".replyType").val()
+								console.log(`데이터 : ${cpw},${ccontent}`);
+								//ajax
+								$.ajax({
+									url:'/comment/cowrite/',
+									type:'post',
+									headers:{'X-CSRFToken':'{{csrf_token}}' },
+									data:{'cpw':cpw,'ccontent':ccontent,'bno':'{{c.bno}}'},
+									dataType:'json',
+									success:function(data){
+										console.log(data);
+										var dataHtml = `
+											<ul id='${data.co[0].cno}'>
+												<li class="name">{{request.session.session_name}} 
+												<span> 
+												[ `+ moment(data.co[0].cdate).format('YYYY-MM-DD HH:mm') +` ]
+												</span></li>
+												<li class="txt">${data.co[0].ccontent}</li>
+												<li class="btn">
+													<a class="rebtn updateBtn">수정</a>
+													<a class="rebtn deleteBtn">삭제</a>
+												</li>
+											</ul>
+										`;
+
+										//하단댓글 리스트 위치에 추가
+										$('.replyBox').prepend(dataHtml);
+										
+										//댓글개수 1증가
+										let co_count = Number($(".co_count").text())
+										co_count += 1
+										$(".co_count").text(co_count);
+
+										// 내용부분 지우기
+										$(".replynum").val('')
+										$(".replyType").val('')
+
+									},
+									error:function(){alert('실패');}
+								});//ajax
+
+							});
+						});//jquery
+					</script>
+
+					<!-- 댓글-->
+					<div class="replyWrite">
+						<ul>
+							<li class="in">
+								<p class="txt">총 <span class="orange co_count">{{comment_qs.count}}</span> 개의 댓글이 달려있습니다.</p>
+								<p class="password">비밀번호&nbsp;&nbsp;<input type="password" class="replynum" /></p>
+								<textarea class="replyType"></textarea>
+							</li>
+							<li class="btn"><a class="replyBtn">등록</a></li>
+						</ul>
+						<p class="ntic">※ 비밀번호를 입력하시면 댓글이 비밀글로 등록 됩니다.</p>
+					</div>
+
+					<div class="replyBox">
+						<!-- 하단댓글 추가 부분 위치 -->
+
+						{% for co in comment_qs %}
+						<ul id='{{co.cno}}'>
+							<li class="name">{{co.member.name}} <span>[ {{co.cdate|date:'Y-m-d H:i'}} ]</span></li>
+							<li class="txt">{{co.ccontent}}</li>
+							<li class="btn">
+								<a class="rebtn updateBtn">수정</a>
+								<a class="rebtn deleteBtn">삭제</a>
+							</li>
+						</ul>
+						{% endfor %}
+
+						<!-- 수정폼, 비밀글 페이지
+						<ul>
+							<li class="name">jjabcde <span>[2014-03-04&nbsp;&nbsp;15:01:59]</span></li>
+							<li class="txt"><textarea class="replyType"></textarea></li>
+							<li class="btn">
+								<a href="#" class="rebtn">수정</a>
+								<a href="#" class="rebtn">삭제</a>
+							</li>
+						</ul>
+						<ul>
+							<li class="name">jjabcde <span>[2014-03-04&nbsp;&nbsp;15:01:59]</span></li>
+							<li class="txt">
+								<a href="password.html" class="passwordBtn"><span class="orange">※ 비밀글입니다.</span></a>
+							</li>
+						</ul>
+						 -->
+					</div>
+					<!-- //댓글 -->
 
 					<!-- Btn Area -->
 					<div class="btnArea btline">
