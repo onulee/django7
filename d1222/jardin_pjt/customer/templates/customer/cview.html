@@ -62,7 +62,15 @@
 								<ul>
 									<li>{{c.btitle}}</li>
 									<li style='padding-left:400px;'>  좋아요 : 
-										<span id='like_icon'><i class="fa-regular fa-heart"></i> ( {{c.likes.count}} )</span>
+										<a style='color:black;'>
+											<span id='like_icon'>
+												{% if c.member in c.likes.all %}
+													<i class="fa-solid fa-heart"></i> ({{ c.likes.count }})
+												{% else %}
+													<i class="fa-regular fa-heart"></i> ({{ c.likes.count }})
+												{% endif %}
+											</span>
+										</a>
 									</li>
 								</ul>
 							</div>
