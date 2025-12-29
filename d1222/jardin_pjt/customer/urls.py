@@ -7,7 +7,7 @@ urlpatterns = [
     path('clist/', views.clist, name='clist'),
     path('cwrite/', views.cwrite, name='cwrite'),
     path('cview/<int:bno>/', views.cview, name='cview'),
-    
-    path('clike/', views.clike, name='clike'),
+    # 좋아요
+    path('clikes/', views.clikes, name='clikes'),
 ]
 

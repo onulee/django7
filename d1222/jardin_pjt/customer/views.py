@@ -6,23 +6,27 @@ from django.core.paginator import Paginator
 from django.db.models import F,Q,Sum,Count
 from comment.models import Comment
 
-def clike(request):
-    # 데이터가져오기
-    id = request.session['session_id']
-    member = Member.objects.get(id=id)
-    bno = request.POST.get("bno",1)
-    board = Board.objects.get(bno=bno)
-    
-    if board.likes.filter(pk=member.id).exists():
-        board.likes.remove(member) # relation_name사용
-        like_chk = '제거'
-    else:
-        board.likes.add(member)  
-        like_chk = '추가'
-    
-    print("개수 : ",board.likes.count())   
-    # 데이터저장
-    context = {"result":like_chk,"count":board.likes.count()}
+#### 좋아요 추가 : ajax
+def clikes(request):
+    if request.method == 'POST':
+        bno = request.POST.get('bno')
+        board = Board.objects.get(bno=bno)
+        id = request.session['session_id']
+        member = Member.objects.get(id=id)
+        
+        # board.likes.all() : 게시글에 좋아요를 클릭한 전체회원
+        # member.likes_member.all() : 현재회원이 좋아요를 클릭한 게시글 전체목록
+        # db : Board테이블에 likes컬럼에 데이터 추가,삭제
+        if board.likes.filter(pk=member.id).exists():
+            board.likes.remove(member) # likes 안에 member를 제거
+            result = '삭제'
+        else:
+            board.likes.add(member)    # likes 안에 member를 추가
+            result = '추가'    
+        count = board.likes.count()    # 좋아요 개수    
+    print('좋아요 개수 확인 : ',count)
+    print('result : ',result)
+    context = {'result':result,'count':count}
     return JsonResponse(context)
 
 
@@ -43,6 +47,7 @@ def cwrite(request):
         
 
 # 고객센터 페이지 뷰 ----------------------------
+# Board : 좋아요도 포함되어 전달됨.
 def cview(request,bno):
     # 1개 게시글
     qs = Board.objects.get(bno=bno)

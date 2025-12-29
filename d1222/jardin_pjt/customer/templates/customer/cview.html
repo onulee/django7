@@ -31,45 +31,43 @@
 					<h2><strong>NOTICE</strong><span>쟈뎅샵 소식을 전해드립니다.</span></h2>
 					<script>
 						$(function(){
-							$('#like_icon').click(function(){
+							$("#likes_icon").click(function(){
 								$.ajax({
-									url:'/customer/clike/',
+									url:'/customer/clikes/',
 									type:'post',
-									headers:{'X-CSRFToken':'{{csrf_token}}' },
+									headers:{'X-CSRFToken':'{{csrf_token}}'},
 									data:{'bno':'{{c.bno}}'},
 									dataType:'json',
 									success:function(data){
-										console.log("결과 : ",data.result)
-										if (data.result == '추가'){
-											alert("좋아요");
-											$('#like_icon').html(`<i class="fa-solid fa-heart"></i> ( ${data.count} )`);
-										}else{
-											alert("좋아요 취소");
-											$('#like_icon').html(`<i class="fa-regular fa-heart"></i> ( ${data.count} )`);
+										console.log("data result : ",data.result);
+										let dataHtml = ``;
+										if(data.result == "추가"){ //추가
+											alert('좋아요 추가');
+											dataHtml = `<i class="fa-solid fa-heart"></i> ( ${data.count} )`;
+										}else{                     //삭제
+											alert('좋아요 삭제');
+											dataHtml = `<i class="fa-regular fa-heart"></i> ( ${data.count} )`;
 										}
+										$('#likes_icon').html(dataHtml);
 									},
 									error:function(){alert('실패');}
 								});//ajax
-								
-								
-								
 							});
-						});
+						});//jquery
+						
 					</script>
 					<div class="viewDivMt">
 						<div class="viewHead">
 							<div class="subject">
 								<ul>
 									<li>{{c.btitle}}</li>
-									<li style='padding-left:400px;'>  좋아요 : 
-										<a style='color:black;'>
-											<span id='like_icon'>
-												{% if c.member in c.likes.all %}
-													<i class="fa-solid fa-heart"></i> ({{ c.likes.count }})
-												{% else %}
-													<i class="fa-regular fa-heart"></i> ({{ c.likes.count }})
-												{% endif %}
-											</span>
+									<li style='padding-left:450px;'>좋아요 : 
+										<a style='color:black;' id='likes_icon'>
+											{% if c.member in c.likes.all %}
+												<i class="fa-solid fa-heart"></i> ( {{c.likes.count}} )
+											{% else %}
+												<i class="fa-regular fa-heart"></i> ( {{c.likes.count}} )
+											{% endif %}
 										</a>
 									</li>
 								</ul>
