@@ -66,7 +66,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'j_pjt.wsgi.application'
 
 
-# Database
+# 오라클 DB 연결
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle', 
