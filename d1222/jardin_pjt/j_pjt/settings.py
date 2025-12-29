@@ -67,6 +67,8 @@ WSGI_APPLICATION = 'j_pjt.wsgi.application'
 
 
 # 오라클 DB 연결
+# alter table MEMBER_MEMBER modify mdate date;
+# alter table customer_board modify bdate date;
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.oracle', 
@@ -75,6 +77,19 @@ DATABASES = {
         'PASSWORD': '1111',
     }
 }
+
+# Mysql 연결
+# DATABASES = {
+#     'default': {
+#         'ENGINE':'django.db.backends.mysql', # mysql 엔진 설정
+#         'NAME':'mysite', # 데이터베이스 이름 
+#         'USER':'root', # 데이터베이스 연결시 사용할 유저 이름
+#         'PASSWORD':'password',# 유저 패스워드
+#         'HOST':'l27.0.0.1', # 데이터베이스 서버 주소
+#         'PORT':'3306' # 데이터베이스 서버 포트
+#     }
+# }
+
 
 # DATABASES = {
 #     'default': {
