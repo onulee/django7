@@ -69,14 +69,14 @@ WSGI_APPLICATION = 'j_pjt.wsgi.application'
 # 오라클 DB 연결
 # alter table MEMBER_MEMBER modify mdate date;
 # alter table customer_board modify bdate date;
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.oracle', 
-        'NAME': 'localhost:1521/xe',        
-        'USER': 'ora_user2',
-        'PASSWORD': '1111',
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.oracle', 
+#         'NAME': 'localhost:1521/xe',        
+#         'USER': 'ora_user2',
+#         'PASSWORD': '1111',
+#     }
+# }
 
 # Mysql 연결
 # DATABASES = {
@@ -90,13 +90,13 @@ DATABASES = {
 #     }
 # }
 
-
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': BASE_DIR / 'db.sqlite3',
-#     }
-# }
+# sqlite3 연결
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
+    }
+}
 
 
 # Password validation

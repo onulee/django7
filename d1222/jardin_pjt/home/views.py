@@ -1,13 +1,45 @@
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-
 import requests
 import json
 from django.conf import settings
-
-
 from home.models import ChartData
+from secret import secret_func
+import requests
+import urllib.request
+
+def naver1(request):
+    secretList = secret_func.make_naver_key()
+    print("비밀번호 : ",secretList)
+    client_id = secretList[0]
+    client_secret = secretList[1]
+    # json 결과
+    encText = urllib.parse.quote("경제")
+    max_display = 100
+    # JSON 결과
+    url = f"https://openapi.naver.com/v1/search/book.json?query={encText}&display={max_display}"
+    # url = "https://openapi.naver.com/v1/search/book.xml?query=" + encText # XML 결과
+    request = urllib.request.Request(url)
+    request.add_header("X-Naver-Client-Id",client_id)
+    request.add_header("X-Naver-Client-Secret",client_secret)
+    response = urllib.request.urlopen(request)
+    rescode = response.getcode()
+    if(rescode==200):
+        response_body = response.read()
+        # print(response_body.decode('utf-8'))
+    else:
+        print("Error Code:" + rescode)
+    
+    # JSON -> 딕셔너리 타입변환
+    data = json.loads(response_body)
+    # list 추출
+    book_list = data['items']
+    print(book_list)
+    
+    context = {"list":book_list}
+    return render(request,'naver1.html',context)
+
 
 def index(request):
     return render(request,'main.html')
