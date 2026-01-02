@@ -5,17 +5,17 @@ from django.db.models import F,Q
 from django.core.paginator import Paginator
 import requests
 import json
-from . import func_api
+# from . import func_api
 
 # 차트 그리기
 def chart(request):
     return render(request,'board/chart.html')
 
 # 공공데이터 api
-def list2(request):
-    public_key = func_api.public_api()
-    context = {'result':'성공'}
-    return render(request,'board/list2.html',context)
+# def list2(request):
+#     public_key = func_api.public_api()
+#     context = {'result':'성공'}
+#     return render(request,'board/list2.html',context)
 
 
 # 게시판 답글달기
