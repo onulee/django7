@@ -6,6 +6,10 @@ from django.core.paginator import Paginator
 from django.db.models import F,Q,Sum,Count
 from comment.models import Comment
 
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
 #### 좋아요 추가 : ajax
 def clikes(request):
     if request.method == 'POST':
@@ -102,3 +106,60 @@ def clist(request):
 # [ 하단넘버링 ]
 # * 이전페이지 유무 : {% if list.has_previous %}
 
+
+#-----------------------------------------------------------------------
+# json
+#-----------------------------------------------------------------------
+# 게시판 리스트
+@api_view(['GET'])    
+def clistJson(request):
+    
+    # DRF형태
+    # axios Json데이터로 전달
+    id = request.data.get('id')
+    name = request.data.get('name')
+    print('get id,name : ',id,name)
+    qs = Board.objects.all()
+    l_qs = list(qs.values())
+    context = {'list':l_qs}
+    return Response(context, status=status.HTTP_200_OK)
+
+# 고객센터 페이지 뷰 ----------------------------
+@api_view(['GET'])  
+def cviewJson(request,bno):
+    # bgroup 역순정렬, bstep 순차정렬
+    qs = list(Board.objects.filter(bno=bno).values())
+    print("qs 데이터 형태 : ",qs[0])
+    context = {'board':qs[0]}
+    return Response(context, status=status.HTTP_200_OK)
+
+@api_view(['DELETE'])
+def cdeleteJson(request,bno):
+    name = request.data.get('name','')
+    print('넘어온 데이터 bno : ',bno)
+    print('넘어온 데이터 name : ',name)
+    Board.objects.get(bno=bno).delete()
+    context = {'result':'성공'}
+    return Response(context, status=status.HTTP_200_OK)
+
+@api_view(['POST'])
+def cwriteJson(request):
+    # list타입으로 변경을 해서 Json타입으로 변경을 해야 함.
+    # objects.filter(), objects.all() -> list타입
+    id = request.data.get('id','')
+    member = Member.objects.get(id=id)
+    btitle = request.data.get('btitle')
+    bcontent = request.data.get('bcontent')
+    # bfile = request.FILES.get('bfile')
+    print('넘어온데이터 id,btitle,bcontent : ',id,btitle,bcontent)
+    bfile =''
+    # db에 저장
+    qs = Board.objects.create(member=member,btitle=btitle,bcontent=bcontent,bfile=bfile)
+    qs.bgroup = qs.bno
+    qs.save()
+    
+    l_qs = list(Board.objects.filter(bno=qs.bno).values())
+    print("l_qs 데이터 형태 : ",l_qs)
+    context = {'result':'성공','board':l_qs}
+    # context = {'result':'성공'}
+    return Response(context, status=status.HTTP_200_OK)

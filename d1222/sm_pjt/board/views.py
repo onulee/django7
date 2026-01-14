@@ -5,6 +5,10 @@ from django.db.models import F,Q
 from django.core.paginator import Paginator
 import requests
 import json
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+
 # from . import func_api
 
 # 차트 그리기
@@ -141,4 +145,24 @@ def write(request):
         qs.save()
         context = {'flag':'1'}
         return render(request,'board/write.html',context)
-        
+    
+    
+#-----------------------------------------------------------------------
+# json
+#-----------------------------------------------------------------------
+# 게시판 리스트
+@api_view(['GET'])    
+def listJson(request):
+    
+    # DRF형태
+    # axios Json데이터로 전달
+    id = request.data.get('id')
+    name = request.data.get('name')
+    print('get id,name : ',id,name)
+    qs = Board.objects.all()
+    l_qs = list(qs.values())
+    context = {'list':l_qs}
+    return Response(context, status=status.HTTP_200_OK)
+
+    
+    

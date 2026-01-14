@@ -31,6 +31,10 @@ INSTALLED_APPS = [
     'product',
     'customer',
     'comment',
+    'corsheaders',    # Json,Django연계 cors추가
+    'rest_framework', # 추가
+
+
 ]
 
 MIDDLEWARE = [
@@ -41,7 +45,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
 ]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
+]
+
+
+
 
 ROOT_URLCONF = 'j_pjt.urls'
 
